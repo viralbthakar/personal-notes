@@ -1,3 +1,12 @@
+"""
+This script generates a plot of stock prices over time, with a zoomed-in inset of a specific region.
+
+The main plot shows the stock prices over time, with a sudden increase in prices simulated for a specific time period.
+The inset plot shows a zoomed-in view of the sudden increase in prices.
+
+The script uses the matplotlib library to generate the plots.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes, mark_inset

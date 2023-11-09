@@ -4,8 +4,20 @@ Iterative Closest Point (ICP) Algorithm with Open3d and NumPy.
 This module provides an demostration of the ICP algorithm to align two sets of 3D points.
 The algorithm iteratively estimates the rigid transformation (translation and rotation)
 that minimizes the distance between the source and target point clouds.
-"""
 
+Functions:
+- read_point_clouds(file_path, to_numpy=False)
+- points_to_open3d(points)
+- perform_icp(source_points, target_points, max_correspondence_distance, init, max_iterations)
+- visualize(points, colors=None, mode="open3d", window_name="Open3D")
+- evaluate(source_points, target_points, max_correspondence_distance, transformation, mode="open3d")
+
+Example usage:
+- Run the script with command line arguments to specify source and target point cloud files, maximum correspondence distance, and maximum iterations.
+- If no source or target file is specified, random point clouds will be generated.
+- The script will output the initial alignment evaluation, perform ICP alignment, and output the evaluation after alignment.
+- The script will also visualize the input and output point clouds.
+"""
 import copy
 import typing
 import argparse
@@ -28,7 +40,11 @@ def points_to_open3d(points):
 
 
 def perform_icp(
-    source_points, target_points, max_correspondence_distance, init, max_iterations
+    source_points,
+    target_points,
+    max_correspondence_distance,
+    init,
+    max_iterations,
 ):
     source = points_to_open3d(source_points)
     target = points_to_open3d(target_points)

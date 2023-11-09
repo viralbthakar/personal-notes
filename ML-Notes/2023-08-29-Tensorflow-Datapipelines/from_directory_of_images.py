@@ -11,9 +11,9 @@ Options:
     --buffer_size (int): Buffer size for shuffling. Default is 1000.
     --batch_size (int): Batch size for batching images. Default is 1.
 """
-
 import argparse
 import tensorflow as tf
+
 
 def preprocess_image(image_path):
     """
@@ -28,6 +28,7 @@ def preprocess_image(image_path):
     image = tf.io.read_file(image_path)
     image = tf.image.decode_jpeg(image, channels=3)
     return image
+
 
 def build_datapipeline(path, buffer_size=100, batch_size=1):
     """
@@ -45,8 +46,11 @@ def build_datapipeline(path, buffer_size=100, batch_size=1):
     image_dataset = image_dataset.map(preprocess_image)
     image_dataset = image_dataset.shuffle(buffer_size=buffer_size)
     image_dataset = image_dataset.batch(batch_size=batch_size)
-    image_dataset = image_dataset.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
+    image_dataset = image_dataset.prefetch(
+        buffer_size=tf.data.experimental.AUTOTUNE
+    )
     return image_dataset
+
 
 def main(args):
     """
@@ -59,19 +63,37 @@ def main(args):
     - None
     """
     image_dataset = build_datapipeline(
-        path=args.path, 
-        batch_size=args.batch_size, 
-        buffer_size=args.buffer_size
+        path=args.path,
+        batch_size=args.batch_size,
+        buffer_size=args.buffer_size,
     )
 
     for sample_batch in image_dataset.take(5):
         print(sample_batch.numpy().shape)
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Image data pipeline using TensorFlow")
-    parser.add_argument("--path", type=str, default="./data/images/*.jpg", help="Path to image files")
-    parser.add_argument("--buffer_size", type=int, default=1000, help="Buffer size for shuffling")
-    parser.add_argument("--batch_size", type=int, default=1, help="Batch size for batching images")
-    
+    parser = argparse.ArgumentParser(
+        description="Image data pipeline using TensorFlow"
+    )
+    parser.add_argument(
+        "--path",
+        type=str,
+        default="./data/images/*.jpg",
+        help="Path to image files",
+    )
+    parser.add_argument(
+        "--buffer_size",
+        type=int,
+        default=1000,
+        help="Buffer size for shuffling",
+    )
+    parser.add_argument(
+        "--batch_size",
+        type=int,
+        default=1,
+        help="Batch size for batching images",
+    )
+
     args = parser.parse_args()
     main(args)

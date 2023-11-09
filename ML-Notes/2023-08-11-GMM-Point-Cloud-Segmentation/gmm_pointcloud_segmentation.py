@@ -6,8 +6,33 @@ It generates synthetic point cloud data with optional Gaussian noise and visuali
 Then, it performs a grid search to find the best parameters for the GMM model and applies the GMM for segmentation.
 
 Example usage:
-python main.py -s path_to_source_point_cloud
+python gmm_pointcloud_segmentation.py -s path_to_source_point_cloud
 
+Functions:
+----------
+read_point_clouds(file_path):
+    Read point cloud data from a file and return the open3d point cloud object, points, and normals.
+
+points_to_open3d(points, normals=None, rgb=None):
+    Convert a set of points, optional normals, and optional RGB values into an Open3D point cloud object.
+
+visualize(points, normals=None, colors=None, uniform_color=True, mode="open3d", window_name="Open3D"):
+    Visualize point cloud data using Open3D's visualization capabilities.
+
+add_gaussian_noise(point_cloud, mean=0, std_dev=0.01):
+    Add Gaussian noise to a given point cloud.
+
+create_samples(point_cloud, normals, num_samples=10):
+    Create multiple samples by adding Gaussian noise to a given point cloud and its normals.
+
+Note:
+-----
+- This program requires the open3d, numpy, sklearn, and matplotlib libraries.
+- If the input point cloud does not have normals, this program estimates the normals using KDTreeSearchParamHybrid
+  with default parameters (radius=0.5, max_nn=100).
+- If normals are not provided, the functions in this program estimate normals using KDTreeSearchParamHybrid with default
+  parameters (radius=0.5, max_nn=100).
+- The function uses Open3D's visualization backend to display the point clouds.
 """
 
 import copy
@@ -53,7 +78,9 @@ def read_point_clouds(file_path):
     if normals.shape[0] == 0:
         print("Computing normals of points cloud")
         pcd.estimate_normals(
-            search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.5, max_nn=100)
+            search_param=o3d.geometry.KDTreeSearchParamHybrid(
+                radius=0.5, max_nn=100
+            )
         )
         normals = np.asarray(pcd.normals)
     return pcd, points, normals
@@ -92,7 +119,9 @@ def points_to_open3d(points, normals=None, rgb=None):
         pcd.normals = o3d.utility.Vector3dVector(normals)
     else:
         pcd.estimate_normals(
-            search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.5, max_nn=100)
+            search_param=o3d.geometry.KDTreeSearchParamHybrid(
+                radius=0.5, max_nn=100
+            )
         )
     if rgb is not None:
         pcd.colors = o3d.utility.Vector3dVector(rgb)
@@ -254,7 +283,9 @@ if __name__ == "__main__":
     np.random.seed(0)
 
     if opt.source is not None:
-        source_pcd, source_points, source_normals = read_point_clouds(opt.source)
+        source_pcd, source_points, source_normals = read_point_clouds(
+            opt.source
+        )
     else:
         source_points = np.vstack(
             (
@@ -262,7 +293,9 @@ if __name__ == "__main__":
                 np.random.uniform(low=2.0, high=3.0, size=(1000, 3)),
             )
         )
-        source_pcd, source_points, source_normals = points_to_open3d(source_points)
+        source_pcd, source_points, source_normals = points_to_open3d(
+            source_points
+        )
 
     print(f"The shape of input source point cloud is : {source_points.shape}")
 
@@ -318,7 +351,9 @@ if __name__ == "__main__":
 
     unique_labels = set(labels)
     max_label = labels.max()
-    colors = plt.get_cmap("tab20")(labels / (max_label if max_label > 0 else 1))
+    colors = plt.get_cmap("tab20")(
+        labels / (max_label if max_label > 0 else 1)
+    )
     colors[labels < 0] = 0
 
     visualize(

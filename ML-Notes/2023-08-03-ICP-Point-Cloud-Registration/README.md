@@ -2,7 +2,7 @@
 
 ## Sample Use
 ```
-python main.py
+python icp.py
 ```
 
 ## Arguments
